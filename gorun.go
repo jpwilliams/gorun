@@ -95,15 +95,19 @@ func Watch() {
 	defer watcher.Close()
 
 	// walk dirs
-	walkFn := func(path string, info os.FileInfo, err error) error {
-		if strings.HasPrefix(filepath.Base(path), ".") {
-			log.Println("Ignoring", path)
+	walkFn := func(p string, info os.FileInfo, err error) error {
+		if strings.HasPrefix(filepath.Base(p), ".") {
+			log.Println("Ignoring", p)
 
 			return filepath.SkipDir
 		}
 
-		log.Println("Watching:", path)
-		err = watcher.Add(path)
+		if p == path {
+			return nil
+		}
+
+		log.Println("Watching:", p)
+		err = watcher.Add(p)
 		if err != nil {
 			log.Fatal(err)
 		}
