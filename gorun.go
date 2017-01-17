@@ -28,7 +28,12 @@ func Start() {
 		cmd.Stderr = os.Stderr
 		go cmd.Run()
 	} else {
-		Rebuild()
+		err := Rebuild()
+
+		if err != nil {
+			return
+		}
+
 		log.Println("Start project ...")
 
 		curpath, _ := os.Getwd()
@@ -41,7 +46,7 @@ func Start() {
 	}
 }
 
-func Rebuild() {
+func Rebuild() error {
 	state.Lock()
 	defer state.Unlock()
 
@@ -54,9 +59,13 @@ func Rebuild() {
 
 	if err != nil {
 		log.Println("============== Rebuild project failed ==============")
-		return
+
+		return err
 	}
+
 	log.Println("Rebuild project success ...")
+
+	return nil
 }
 
 func Stop() {
