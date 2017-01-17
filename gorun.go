@@ -21,7 +21,6 @@ import (
 	"strings"
 	"sync"
 	"time"
-	// "code.google.com/p/go.exp/fsnotify"
 )
 
 var (
@@ -46,7 +45,6 @@ func Start() {
 		log.Println("Start project ...")
 
 		curpath, _ := os.Getwd()
-		// log.Println(curpath)
 
 		cmd = exec.Command("./" + filepath.Base(curpath))
 		cmd.Stdout = os.Stdout
@@ -83,10 +81,6 @@ func Stop() {
 	if cmd != nil {
 		log.Println("Kill running process:", cmd.Process.Pid)
 		cmd.Process.Kill()
-		// // cmd.Process.Release()
-
-		// st, _ := cmd.Process.Wait()
-		// log.Println("Kill process:", st.Exited())
 	}
 }
 
@@ -106,16 +100,18 @@ func Watch() {
 
 	// walk dirs
 	walkFn := func(path string, info os.FileInfo, err error) error {
+		if strings.HasPrefix(filepath.Base(path), ".") {
+			log.Println("Ignoring", path)
 
-		// Not watch dir, has .
-		if info.IsDir() && !strings.Contains(path, ".") {
-			log.Println("Watch DIR:", path)
-
-			err = watcher.Add(path)
-			if err != nil {
-				log.Fatal(err)
-			}
+			return filepath.SkipDir
 		}
+
+		log.Println("Watching:", path)
+		err = watcher.Add(path)
+		if err != nil {
+			log.Fatal(err)
+		}
+
 		return nil
 	}
 
@@ -123,20 +119,10 @@ func Watch() {
 		log.Println(err)
 	}
 
-	changed := false
 	for {
 		select {
 		case event := <-watcher.Events:
-
-			changed = true
-			if t, ok := eventTime[event.Name]; ok {
-				if t.Add(time.Millisecond * 3000).After(time.Now()) {
-					changed = false
-				}
-			}
 			eventTime[event.Name] = time.Now()
-
-			log.Println("event", event, "changed=", changed)
 
 			if event.Op == fsnotify.Write && strings.Contains(event.Name, ".go") {
 				println("---------------------------------------------------")
