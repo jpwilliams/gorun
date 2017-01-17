@@ -13,11 +13,9 @@ import (
 )
 
 var (
-	cmd     *exec.Cmd
-	state   sync.Mutex
-	appname string
-
-	// fixed: File change soon
+	cmd       *exec.Cmd
+	state     sync.Mutex
+	appname   string
 	eventTime = make(map[string]time.Time)
 )
 
