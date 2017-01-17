@@ -1,14 +1,3 @@
-// Copyright 2013 The Authors. All rights reserved.
-// Use of this source code is governed by a MIT
-// license that can be found in the LICENSE file.
-//
-// Test Run: go run gorun.go
-// INSTALL: go install
-//
-// @Author: wangxian
-// @Created: 2013-07-31
-//
-// Project URL: https://github.com/wangxian/gorun
 package main
 
 import (
